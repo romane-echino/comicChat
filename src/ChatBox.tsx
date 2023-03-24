@@ -11,7 +11,7 @@ interface IChatBoxState {
 }
 
 
-interface ChatMessage {
+export interface ChatMessage {
     userId: string;
     emotion: number;
 
@@ -26,13 +26,7 @@ export class ChatBox extends React.Component<IChatBoxProps, IChatBoxState>{
         super(props);
 
         this.state = {
-            messages: [
-                {
-                    userId: '1',
-                    emotion: 0,
-                    message: 'Hello world!'
-                }
-            ]
+            messages: this.props.Messages
         }
     }
 
