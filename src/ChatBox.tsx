@@ -63,6 +63,7 @@ export class ChatBox extends React.Component<IChatBoxProps, IChatBoxState>{
                     ctx.fillStyle = "red"
                     ctx.fill();
 
+
                     let anchorX = width / 2;
                     let anchorY = height * vTop - 20;
 

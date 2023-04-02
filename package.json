@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "comic book style chat",
   "main": "index.js",
+  "proxy": "http://localhost:5000",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "tw": "npx tailwindcss -i ./src/tailwindbase.scss -o ./src/tailwind.scss --watch"
+    "tw": "npx tailwindcss -i ./src/tailwindbase.scss -o ./src/tailwind.scss --watch",
+    "server":"node server.js"
   },
   "keywords": [
     "comic",

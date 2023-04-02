@@ -1,8 +1,8 @@
 import React, { createRef, useRef } from 'react';
-import { Peer } from "peerjs";
-import { getId, getPeer } from './client';
+import { DataConnection, Peer } from "peerjs";
 import './tailwind.scss'
 import { ChatBox, ChatMessage } from './ChatBox';
+import { ChatSVGBox } from './ChatSVGBox';
 
 interface IAppProps {
 
@@ -10,45 +10,74 @@ interface IAppProps {
 
 interface IAppState {
     id: string;
+    clients: string[];
     messages: ChatMessage[];
 }
 
 export default class App extends React.Component<IAppProps, IAppState>{
     targetId = createRef<HTMLInputElement>();
     textInput = createRef<HTMLInputElement>();
+    peer: Peer | null = null;
+    connexion: DataConnection | null = null;
 
     constructor(props) {
         super(props);
 
         this.state = {
-            id: getId(),
-            messages: []
+            id: '',
+            messages: [],
+            clients: []
         }
     }
 
 
+    async componentDidMount(): Promise<void> {
+        let response = await fetch('/connect');
+        const body = await response.json();
+        //console.log('body', body);
+        this.setState({
+            id: body.id,
+            clients: body.connected
+        }, () => {
+            this.peer = new Peer(this.state.id);
+        })
 
-    connect() {
-        let peer = getPeer();
-        let targetId = this.targetId.current?.value;
-        if (targetId) {
-            let conn = peer.connect(targetId);
 
-            conn.on("open", () => {
+        setInterval(this.updateClients.bind(this), 1000);
+    }
+
+    async updateClients() {
+        let response = await fetch('/getclients');
+        const body = await response.json();
+        //console.log('body', body);
+        this.setState({
+            clients: body.connected
+        })
+    }
+
+
+    connect(other: string) {
+
+
+        if (other && this.peer) {
+            this.connexion = this.peer.connect(other);
+
+            this.connexion.on("open", () => {
                 console.log('connection is open');
 
-                conn.send("hi!");
+                //this.connexion!.send("hi!");
             });
 
-            console.log('dafuk', conn);
-
-            peer.on("connection", (conn) => {
+            this.peer.on("connection", (conn) => {
                 conn.on("data", (data) => {
                     // Will print 'hi!'
-                    console.log(data);
+                    if (typeof data === 'object') {
+                        console.log('message recieved', data)
+                        this.addMessage(data as ChatMessage)
+                    }
                 });
                 conn.on("open", () => {
-                    conn.send("hello!");
+                    //conn.send("hello!");
                 });
             });
 
@@ -64,46 +93,64 @@ export default class App extends React.Component<IAppProps, IAppState>{
             if (this.textInput.current) {
                 let value = this.textInput.current.value;
                 this.textInput.current.value = '';
-                this.send(value);
+                this.send({
+                    emotion: 1,
+                    message: value,
+                    userId: this.state.id
+                });
             }
 
         }
     }
 
-    send(message: string) {
-        let messages: ChatMessage[] = [...this.state.messages, {
-            userId: '1',
-            emotion: 0,
-            message: message
-        }];
-
+    addMessage(message: ChatMessage) {
+        console.log('adding message', message);
+        let messages: ChatMessage[] = [message, ...this.state.messages];
         this.setState({ messages: messages })
+    }
+
+    send(message: ChatMessage) {
+        this.connexion?.send(message);
+        this.addMessage(message)
     }
 
     render(): React.ReactNode {
         return (
             <div className='flex flex-col'>
-                <div>{this.state.id}</div>
+
+                <div className='font-bold'>{this.state.id}</div>
+                <div>
+                    {this.state.clients.map((value) => {
+                        if (value !== this.state.id) {
+                            return (
+                                <div key={value}>
+                                    <div>{value}</div>
+                                    <button className='bg-blue-400 text-white'
+                                        style={{ fontFamily: 'Cats' }}
+                                        onClick={() => this.connect(value)}>
+                                        connect
+                                    </button>
+                                </div>
+                            )
+                        }
+                    })}
+                </div>
 
 
-                <input ref={this.targetId} type="text" className='border' />
-
-                <button className='bg-blue-400 text-white'
-                    onClick={() => this.connect()}>
-                    connect
-                </button>
-
-                <textarea className='border'>
-                </textarea>
-
-                Chat
-                <input type="text" ref={this.textInput} onKeyDown={(e) => this.keydown(e)} />
+                <input type="text"
+                    className='border border-black'
+                    ref={this.textInput}
+                    onKeyDown={(e) => this.keydown(e)} />
 
                 <div className='flex flex-wrap gap-2 justify-center'>
                     {this.state.messages.map((message, index) => {
-                        return (
-                            <ChatBox key={index} Messages={[message]} />
-                        )
+                        return <ChatSVGBox key={index} Messages={[message]} />
+                    })}
+                </div>
+
+                <div>
+                {this.state.messages.map((message, index) => {
+                        return <div key={index}>{message.message} {message.userId}</div>
                     })}
                 </div>
             </div>
