@@ -133,7 +133,7 @@ class App extends React.Component<IAppProps, IAppState>{
                             client.ctx.send(data)
                         }
                     })
-                }else{
+                } else {
                     console.log('connection data typeof ???', data)
                 }
             });
@@ -141,11 +141,11 @@ class App extends React.Component<IAppProps, IAppState>{
             this.peer.on("connection", (conn) => {
                 conn.on("data", (data) => {
                     // Will print 'hi!'
-                    
+
                     if (typeof data === 'object') {
                         console.log('message recieved', data)
                         this.addMessage(data as ChatMessage)
-                    }else{
+                    } else {
                         console.log('connection data typeof ???', data)
                     }
                 });
@@ -236,23 +236,26 @@ class App extends React.Component<IAppProps, IAppState>{
                     </Route>
 
                     <Route path='/chat' >
-                        <div className='fixed inset-0 flex flex-col' style={{ fontFamily: 'Cats' }}>
-                            <div className='bg-[#92C8F8] flex items-center justify-center text-white h-12'>
+                        <div style={{ fontFamily: 'Cats' }}>
+                            <div className='bg-[#92C8F8] flex items-center justify-center text-white h-12 fixed inset-x-0 top-0'>
                                 Comic chat {this.state.id}
                             </div>
-                            <div className='grow'>
+                            <div className='fixed top-12 inset-x-0 bottom-20 border border-black overflow-x-hidden overflow-y-auto'>
                                 {this.state.messages.map((value, index) => {
                                     return (
                                         <div key={index}>{value.message}</div>
                                     )
                                 })}
                             </div>
-                            <div className='flex bg-[#92C8F8]'>
+                            <div className='flex bg-[#92C8F8] pb-8 gap-2 pt-2 px-2 fixed inset-x-0 bottom-0'>
                                 <input type="text"
-                                    className='border border-black grow'
+                                    className=' grow'
                                     ref={this.textInput}
                                     onKeyDown={(e) => this.keydown(e)} />
-                                <button>SND</button>
+                                <button onClick={() => this.sendHandler()}
+                                    className='text-black flex items-center rounded-md justify-center p-2 bg-white w-12 h-12'>
+                                    <i className="fa-duotone fa-paper-plane"></i>
+                                </button>
                             </div>
                         </div>
                     </Route>

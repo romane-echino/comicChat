@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#92C8F8" />
     <meta name="description" content="TS webapp" />
     <link rel="apple-touch-icon" href="logo192.png" />
+    <link rel="manifest" href="app.webmanifest">
+    <script src="https://kit.fontawesome.com/cd9ce0b05e.js" crossorigin="anonymous"></script>
     <title>React App</title>
 
     <style>
@@ -19,4 +21,10 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+   navigator.serviceWorker.register("serviceworker.js");
+}
+  </script>
 </html>
