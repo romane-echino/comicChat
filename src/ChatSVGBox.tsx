@@ -47,8 +47,13 @@ export class ChatSVGBox extends React.Component<IChatBoxProps, IChatBoxState>{
     }
 
     shouldComponentUpdate(nextProps: Readonly<IChatBoxProps>, nextState: Readonly<IChatBoxState>, nextContext: any): boolean {
-        if(JSON.stringify(nextProps.Messages) !== JSON.stringify(this.props.Messages))
-            return true
+        if (JSON.stringify(nextProps.Messages) !== JSON.stringify(this.props.Messages))
+            return true;
+        if (JSON.stringify(nextState.messages) !== JSON.stringify(this.state.messages))
+            return true;
+        if (nextState.width !== this.state.width) {
+            return true;
+        }
 
         return false;
     }
@@ -67,19 +72,22 @@ export class ChatSVGBox extends React.Component<IChatBoxProps, IChatBoxState>{
                         */
 
     getMessages(): ReactNode {
-        return this.state.messages.map((m, index) => {
+        let result: ReactNode[] = [];
+        this.props.Messages.forEach(m => {
             console.log('message chatbox', m.message);
 
-            return (
-                <text x="100" y="35" key={index}
+            result.push(
+                <text x="100" y="35" key={m.userId}
                     fill="black"
-                    paintOrder={'stroke fill'}
                     textAnchor="middle"
                     style={{ fontFamily: 'Cats', fontSize: '20px' }}>
                     {m.message}
                 </text>
             )
+
         });
+
+        return result;
     }
 
     getCharacters(): ReactNode {
@@ -92,14 +100,14 @@ export class ChatSVGBox extends React.Component<IChatBoxProps, IChatBoxState>{
             let vTop = 1 / 3;
             let index = 0;
 
-            for (let m of this.state.messages) {
+            for (let m of this.props.Messages) {
 
                 let x = width / 2 - ((width * hRatio) / 2);
                 let y = height * vTop;
                 let w = width * hRatio;
                 let h = height * vRatio;
                 result.push(
-                    <foreignObject width={w} height={h} x={x} y={y} key={index}>
+                    <foreignObject width={w} height={h} x={x} y={y} key={m.userId}>
                         <svg viewBox="0 0 196 256">
                             <MarshIdleAnimated color={`#${m.userId.substring(0, 6)}`} />
                         </svg>
@@ -117,10 +125,27 @@ export class ChatSVGBox extends React.Component<IChatBoxProps, IChatBoxState>{
     render(): ReactNode {
         return (
             <svg ref={this.canvas} className="grow max-w-xs">
-                <text>{this.props.Messages[0].message}</text>
-                {this.getMessages()}
+
+                {
+                this.getMessages()
+                
+                }
                 {this.getCharacters()}
+                {/*
                 <rect width="100%" height="100%" stroke="black" strokeWidth={10} fill="transparent"></rect>
+
+
+                
+              
+
+
+                <text x="100" y="35"
+                    fill="black"
+                    textAnchor="middle"
+                    style={{ fontFamily: 'Cats', fontSize: '20px' }}>
+                    {this.props.Messages[0].message}
+                </text>
+                   */}
             </svg>
         )
     }
