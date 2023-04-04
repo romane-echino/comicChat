@@ -57,6 +57,11 @@ class App extends React.Component<IAppProps, IAppState>{
     }
 
     componentDidMount() {
+        if ("virtualKeyboard" in navigator) {
+            //@ts-ignore
+            navigator.virtualKeyboard.overlaysContent = true;
+          }
+
         window.addEventListener("beforeunload", this.onUnload.bind(this))
         document.addEventListener("pause", () => { alert('salut') }, false);
 
@@ -330,7 +335,7 @@ class App extends React.Component<IAppProps, IAppState>{
                                 })}
                             </div>
                             <div className='flex bg-[#92C8F8] pb-8 gap-2 pt-2 px-2 fixed inset-x-0 bottom-0 h-24'
-                            style={{bottom:'env(keyboard-inset-bottom)'}}>
+                            style={{marginBottom:'calc(20px + env(keyboard-inset-height));'}}>
                                 <div className='relative grow'>
 
 
