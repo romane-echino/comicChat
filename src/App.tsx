@@ -10,6 +10,8 @@ import axios from 'axios';
 import { Loading } from './pages/Loading';
 import { motion } from 'framer-motion';
 import { Popover } from '@headlessui/react';
+import { url } from 'inspector';
+import background from './background.jpg';
 
 interface IAppProps extends RouteComponentProps {
 
@@ -109,6 +111,15 @@ class App extends React.Component<IAppProps, IAppState>{
                 message: value,
                 userId: this.state.user.id
             });
+        }
+        else{
+            let value = this.textInput.current!.value;
+            this.addMessage({
+                timeStamp: new Date().toISOString(),
+                emotion: ChatEmotion.Happy,
+                message: value,
+                userId: 'NO_ID'
+            })
         }
     }
 
@@ -313,12 +324,13 @@ class App extends React.Component<IAppProps, IAppState>{
                                 </div>
                             </div>
                             <div className='fixed top-12 inset-x-0 bottom-24 border overflow-x-hidden overflow-y-auto 
-                            flex flex-wrap gap-2 flex-row justify-center'>
+                            flex flex-wrap gap-2 flex-row justify-center p-4' style={{background:`url(${background})`}}>
                                 {this.state.messages.map((value, index) => {
                                     return <ChatSVGBox key={index} Messages={[value]} />
                                 })}
                             </div>
-                            <div className='flex bg-[#92C8F8] pb-8 gap-2 pt-2 px-2 fixed inset-x-0 bottom-0 h-24'>
+                            <div className='flex bg-[#92C8F8] pb-8 gap-2 pt-2 px-2 fixed inset-x-0 bottom-0 h-24'
+                            style={{bottom:'env(keyboard-inset-bottom)'}}>
                                 <div className='relative grow'>
 
 

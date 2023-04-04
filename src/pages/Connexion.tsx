@@ -90,7 +90,7 @@ export class Connexion extends React.Component<IConnexionProps, IConnexionState>
 
                         <div className="text-3xl">Welcome to</div>
                         <div className="text-4xl">ComicChat</div>
-                        <pre>
+                        <pre className="text-xs">
                             {this.state.user.id}
                         </pre>
                     </motion.div>

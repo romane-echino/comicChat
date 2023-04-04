@@ -125,10 +125,10 @@ export class ChatSVGBox extends React.Component<IChatBoxProps, IChatBoxState>{
     render(): ReactNode {
         return (
             <svg ref={this.canvas} className="grow max-w-xs">
-
+                <rect width="100%" height="100%" fill="white"></rect>
                 {
-                this.getMessages()
-                
+                    this.getMessages()
+
                 }
                 {this.getCharacters()}
                 {/*
@@ -145,7 +145,7 @@ export class ChatSVGBox extends React.Component<IChatBoxProps, IChatBoxState>{
                 </text>
                    */}
 
-<rect width="100%" height="100%" stroke="black" strokeWidth={10} fill="transparent"></rect>
+                <rect width="100%" height="100%" stroke="black" strokeWidth={10} fill="transparent"></rect>
 
 
             </svg>
