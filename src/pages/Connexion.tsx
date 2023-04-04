@@ -68,7 +68,7 @@ export class Connexion extends React.Component<IConnexionProps, IConnexionState>
 
                 console.log('sending', this.state.user);
 
-                axios.post('/connect', this.state.user)
+                axios.post('/api/connect', this.state.user)
                     .then(response => {
                         console.log('response', JSON.stringify(response.data));
                         this.props.Connect(this.state.user, response.data);

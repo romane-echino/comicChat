@@ -88,7 +88,7 @@ class App extends React.Component<IAppProps, IAppState>{
     disconnect() {
         if (this.state.user) {
             console.log('try disconnect');
-            axios.post('/disconnect', this.state.user).then(response =>
+            axios.post('/api/disconnect', this.state.user).then(response =>
                 console.log('disconnect response', response.data));
         }
     }
@@ -249,7 +249,7 @@ class App extends React.Component<IAppProps, IAppState>{
 
 
     updateClients() {
-        axios.get('/getclients')
+        axios.get('/api/getclients')
             .then(response => {
                 let connectedClients: ServerUserInfo[] = response.data.connected;
                 //console.log('response', connectedClients);
