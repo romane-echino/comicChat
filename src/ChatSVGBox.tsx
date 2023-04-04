@@ -132,9 +132,7 @@ export class ChatSVGBox extends React.Component<IChatBoxProps, IChatBoxState>{
                 }
                 {this.getCharacters()}
                 {/*
-                <rect width="100%" height="100%" stroke="black" strokeWidth={10} fill="transparent"></rect>
-
-
+                
                 
               
 
@@ -146,6 +144,10 @@ export class ChatSVGBox extends React.Component<IChatBoxProps, IChatBoxState>{
                     {this.props.Messages[0].message}
                 </text>
                    */}
+
+<rect width="100%" height="100%" stroke="black" strokeWidth={10} fill="transparent"></rect>
+
+
             </svg>
         )
     }

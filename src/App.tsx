@@ -1,19 +1,22 @@
 import React, { createRef, useRef } from 'react';
 import { DataConnection, Peer } from "peerjs";
 import './tailwind.scss'
-import { ChatBox, ChatMessage } from './ChatBox';
+import { ChatBox, ChatEmotion, ChatMessage } from './ChatBox';
 import { ChatSVGBox } from './ChatSVGBox';
 import { Route, Switch, RouteComponentProps, withRouter } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { Connexion, ServerUserInfo, UserInfo } from './pages/Connexion';
 import axios from 'axios';
+import { Loading } from './pages/Loading';
+import { motion } from 'framer-motion';
+import { Popover } from '@headlessui/react';
 
 interface IAppProps extends RouteComponentProps {
 
 }
 
 interface IAppState {
-    id: string;
+    user: UserInfo | null;
     isHost: boolean;
     messages: ChatMessage[];
 
@@ -21,13 +24,16 @@ interface IAppState {
         [id: string]: PeerData
     }
 
-    host: PeerData | null
+    host: PeerData | null;
+
+    message: string;
 }
 
 interface PeerData {
     id: string;
+    nickname: string;
     connected: boolean;
-    ctx: DataConnection;
+    ctx: DataConnection | null;
 }
 
 class App extends React.Component<IAppProps, IAppState>{
@@ -39,19 +45,53 @@ class App extends React.Component<IAppProps, IAppState>{
         super(props);
 
         this.state = {
-            id: '',
+            user: null,
             isHost: false,
             messages: [],
             clients: {},
-            host: null
+            host: null,
+            message: ''
         }
     }
 
-    async componentDidMount(): Promise<void> {
+    componentDidMount() {
+        window.addEventListener("beforeunload", this.onUnload.bind(this))
+        document.addEventListener("pause", () => { alert('salut') }, false);
 
+        window.addEventListener('appinstalled', () => {
+            // If visible, hide the install promotion
+            alert('hide da shit')
+            // Log install to analytics
+            console.log('INSTALL: Success');
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'hidden') {
+                this.disconnect();
+            }
+        });
+    }
+
+    componentWillUnmount() {
+
+        window.removeEventListener("beforeunload", this.onUnload.bind(this))
+    }
+
+    onUnload(event) {
+        const e = event || window.event;
+        e.preventDefault();
+
+        this.disconnect();
     }
 
 
+    disconnect() {
+        if (this.state.user) {
+            console.log('try disconnect');
+            axios.post('/disconnect', this.state.user).then(response =>
+                console.log('disconnect response', response.data));
+        }
+    }
 
     keydown(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.code === "Enter") {
@@ -60,13 +100,14 @@ class App extends React.Component<IAppProps, IAppState>{
     }
 
     sendHandler() {
-        if (this.textInput.current) {
+        if (this.textInput.current && this.state.user) {
             let value = this.textInput.current.value;
             this.textInput.current.value = '';
             this.send({
-                emotion: 1,
+                timeStamp: new Date().toISOString(),
+                emotion: ChatEmotion.Happy,
                 message: value,
-                userId: this.state.id
+                userId: this.state.user.id
             });
         }
     }
@@ -84,7 +125,7 @@ class App extends React.Component<IAppProps, IAppState>{
             console.log('sending to clients', message);
             Object.keys(this.state.clients).forEach(c => {
                 let client = this.state.clients[c];
-                if (client.connected) {
+                if (client.connected && client.ctx) {
                     client.ctx.send(message)
                 }
             })
@@ -92,7 +133,7 @@ class App extends React.Component<IAppProps, IAppState>{
 
             let host = this.state.host;
             console.log('sending to host', message, host);
-            if (host && host.connected) {
+            if (host && host.connected && host.ctx) {
                 host.ctx.send(message)
             }
         }
@@ -100,8 +141,9 @@ class App extends React.Component<IAppProps, IAppState>{
         this.addMessage(message)
     }
 
-    peerConnexion(id: string, host: boolean) {
+    peerConnexion(id: string, host: boolean, nickname: string = "") {
         if (this.peer &&
+            this.state.user &&
             id !== 'undefined' &&
             (!this.state.clients[id] ||
                 (this.state.clients[id] && !this.state.clients[id].connected))) {
@@ -114,8 +156,11 @@ class App extends React.Component<IAppProps, IAppState>{
                 if (host) {
                     let clients = this.state.clients;
                     clients[id].connected = true;
+                    clients[id].nickname = nickname;
                     console.log('client connection is open #2', clients);
                     this.setState({ clients: clients })
+
+                    this.props.history.push('/Chat')
                 }
             });
 
@@ -129,7 +174,7 @@ class App extends React.Component<IAppProps, IAppState>{
                     this.addMessage(data as ChatMessage)
                     Object.keys(this.state.clients).forEach(c => {
                         let client = this.state.clients[c];
-                        if (client.connected && client.id !== (data as ChatMessage).userId) {
+                        if (client.connected && client.ctx && client.id !== (data as ChatMessage).userId) {
                             client.ctx.send(data)
                         }
                     })
@@ -160,7 +205,15 @@ class App extends React.Component<IAppProps, IAppState>{
                         this.setState({ host: hostData })
                     }
 
-                    conn.send('Fuuuuck')
+                    let firstMessage: ChatMessage = {
+                        timeStamp: new Date().toISOString(),
+                        userId: this.state.user!.id,
+                        message: `${nickname} à rejoind la conversation`,
+                        emotion: ChatEmotion.Joining
+                    }
+
+                    conn.send(firstMessage);
+                    this.props.history.push('/Chat')
                     //conn.send("hello!");
                 });
             });
@@ -171,6 +224,7 @@ class App extends React.Component<IAppProps, IAppState>{
 
                 clients[id] = {
                     id: id,
+                    nickname: 'UNKNOWN_CLIENT',
                     ctx: connexion,
                     connected: false
                 };
@@ -184,6 +238,7 @@ class App extends React.Component<IAppProps, IAppState>{
                 this.setState({
                     host: {
                         id: id,
+                        nickname: 'UNKNOWN_HOST',
                         ctx: connexion,
                         connected: false
                     }
@@ -200,28 +255,28 @@ class App extends React.Component<IAppProps, IAppState>{
                 //console.log('response', connectedClients);
                 connectedClients.forEach(c => {
                     if (!c.host) {
-                        this.peerConnexion(c.id, true)
+                        this.peerConnexion(c.id, true, c.nickname)
                     }
                 })
             });
     }
 
     connected(user: UserInfo, hostId: string) {
-        console.log(`creating peer [${user.userId}]`);
+        console.log(`creating peer [${user.id}]`);
         let isHost = hostId === 'HOST';
-        this.peer = new Peer(user.userId);
+        this.peer = new Peer(user.id);
 
         this.setState({
-            id: user.userId,
+            user: user,
             isHost: isHost
         }, () => {
             if (hostId !== 'HOST' && this.peer) {
                 this.peerConnexion(hostId, false);
-                this.props.history.push('/chat')
+                this.props.history.push('/loading')
             }
             else {
                 setInterval(this.updateClients.bind(this), 5000);
-                this.props.history.push('/chat')
+                this.props.history.push('/loading')
             }
         })
     }
@@ -235,27 +290,77 @@ class App extends React.Component<IAppProps, IAppState>{
                         <Connexion Connect={(u, t) => this.connected(u, t)} />
                     </Route>
 
+                    <Route path='/loading' exact>
+                        <Loading />
+                    </Route>
+
                     <Route path='/chat' >
                         <div style={{ fontFamily: 'Cats' }}>
                             <div className='bg-[#92C8F8] flex items-center justify-center text-white h-12 fixed inset-x-0 top-0'>
-                                Comic chat {this.state.id}
+                                Comic chat {this.state.user?.id}
+
+                                <div className='absolute bg-black text-white right-0 top-0'>
+                                    {Object.keys(this.state.clients).map((k, i) => {
+                                        let client = this.state.clients[k]
+                                        return (
+                                            <div className='flex'>
+                                                <div>{client.nickname}</div>
+                                                <div>{client.id}</div>
+                                                <div>{client.connected ? 'true' : 'false'}</div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                             </div>
-                            <div className='fixed top-12 inset-x-0 bottom-20 border border-black overflow-x-hidden overflow-y-auto'>
+                            <div className='fixed top-12 inset-x-0 bottom-24 border overflow-x-hidden overflow-y-auto 
+                            flex flex-wrap gap-2 flex-row justify-center'>
                                 {this.state.messages.map((value, index) => {
-                                    return (
-                                        <div key={index}>{value.message}</div>
-                                    )
+                                    return <ChatSVGBox key={index} Messages={[value]} />
                                 })}
                             </div>
-                            <div className='flex bg-[#92C8F8] pb-8 gap-2 pt-2 px-2 fixed inset-x-0 bottom-0'>
-                                <input type="text"
-                                    className=' grow'
-                                    ref={this.textInput}
-                                    onKeyDown={(e) => this.keydown(e)} />
-                                <button onClick={() => this.sendHandler()}
-                                    className='text-black flex items-center rounded-md justify-center p-2 bg-white w-12 h-12'>
-                                    <i className="fa-duotone fa-paper-plane"></i>
-                                </button>
+                            <div className='flex bg-[#92C8F8] pb-8 gap-2 pt-2 px-2 fixed inset-x-0 bottom-0 h-24'>
+                                <div className='relative grow'>
+
+
+                                    <motion.input type="text"
+                                        style={{ fontFamily: 'Comic' }}
+                                        className="rounded-md px-4 py-2 shadow-md text-lg w-full h-11 transition"
+                                        ref={this.textInput}
+                                        onChange={(e) => this.setState({ message: e.target.value })}
+                                        onKeyDown={(e) => this.keydown(e)} />
+
+                                    <Popover>
+                                        <Popover.Button>
+                                            <div className='absolute h-11 w-11 inset-y-0 right-0 text-2xl flex items-center justify-center'>
+                                                <i className="fa-duotone fa-face-smile"></i>
+                                            </div>
+                                        </Popover.Button>
+                                        <Popover.Panel as="div" className='fixed bottom-24 right-0 p-4 shadow-md rounded-md'>
+   
+                                                <div className='flex gap-2'>
+                                                    <div>Happy</div>
+                                                    <div>
+                                                    <i className="fa-duotone fa-face-smile-beam"></i>
+                                                    </div>
+                                                </div>
+                                                <div>Sad</div>
+                                                <div>Angry</div>
+                                                <div>Hello</div>
+
+                                        </Popover.Panel>
+                                    </Popover>
+
+
+                                </div>
+                                {this.state.message !== '' &&
+                                    <motion.button onClick={() => this.sendHandler()}
+                                        initial={{ opacity: 0, translateX: 10 }}
+                                        animate={{ opacity: 1, translateX: 0 }}
+                                        className='text-white flex items-center rounded-full justify-center p-2 bg-[#5784BA] w-11 h-11'>
+                                        <i className="fas fa-paper-plane"></i>
+                                    </motion.button>
+                                }
+
                             </div>
                         </div>
                     </Route>

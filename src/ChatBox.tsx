@@ -12,10 +12,18 @@ interface IChatBoxState {
 
 
 export interface ChatMessage {
+    timeStamp:string;
     userId: string;
-    emotion: number;
-
+    emotion: ChatEmotion;
     message: string;
+}
+
+export enum ChatEmotion {
+    Joining = 0,
+    Hello = 1,
+    Happy = 2,
+    Angry = 3,
+    Sad = 4,
 }
 
 export class ChatBox extends React.Component<IChatBoxProps, IChatBoxState>{
@@ -79,10 +87,10 @@ export class ChatBox extends React.Component<IChatBoxProps, IChatBoxState>{
                     ctx.beginPath();
                     ctx.lineWidth = 1;
                     ctx.strokeStyle = 'blue';
-                    ctx.moveTo(50 + (metrics.width/2) - 10, 50);
-                    ctx.quadraticCurveTo(50 + (metrics.width/2) , anchorY-10, anchorX, anchorY);
+                    ctx.moveTo(50 + (metrics.width / 2) - 10, 50);
+                    ctx.quadraticCurveTo(50 + (metrics.width / 2), anchorY - 10, anchorX, anchorY);
                     //ctx.lineTo(anchorX, anchorY);
-                    ctx.lineTo(50 + (metrics.width/2) + 10, 50);
+                    ctx.lineTo(50 + (metrics.width / 2) + 10, 50);
                     ctx.stroke();
 
                     ctx.strokeStyle = 'black';
