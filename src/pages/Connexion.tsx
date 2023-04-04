@@ -30,8 +30,12 @@ export class Connexion extends React.Component<IConnexionProps, IConnexionState>
         super(props);
 
         let userInfoJSON = localStorage.getItem('userInfo');
-        let userInfo: UserInfo = JSON.parse(userInfoJSON??'');
+        let userInfo: UserInfo | null = null;
 
+        if(userInfoJSON){
+            userInfo = JSON.parse(userInfoJSON);
+        }
+        
         if (userInfo && userInfo.id) {
             this.state = {
                 user: {

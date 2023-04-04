@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "comic book style chat",
   "main": "index.js",
+  "homepage": "./",
   "proxy": "http://localhost:5000",
   "scripts": {
     "start": "react-scripts start",
