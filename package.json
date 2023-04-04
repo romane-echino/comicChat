@@ -11,7 +11,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "tw": "npx tailwindcss -i ./src/tailwindbase.scss -o ./src/tailwind.scss --watch",
-    "server": "node server.js"
+    "server": "node api/index.js"
   },
   "keywords": [
     "comic",

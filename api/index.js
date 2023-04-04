@@ -10,6 +10,13 @@ connectedClients = [];
 app.listen(port, () => console.log(`Listening on port ${port}`)); //Line 6
 console.log('Salut', uuidv4())
 
+app.get('/api', (req, res) => {
+  const path = `/api/item/${v4()}`;
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
+  res.end(`Hello! Go to item: <a href="${path}">${path}</a>`);
+});
+
 // create a GET route
 app.get('/express_backend', (req, res) => { //Line 9
   res.send({ express: 'YOUR EXPRESS BACKEND IS CONNECTED TO REACT' }); //Line 10
@@ -103,3 +110,4 @@ app.get('/resetclients', (req, res) => {
 
 
 
+module.exports = app;
