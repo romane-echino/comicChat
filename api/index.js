@@ -1,14 +1,27 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
+const webpush = require('web-push');
 const { v4: uuidv4 } = require('uuid');
 app.use(express.json())
 
 connectedClients = [];
 
+const publicVapidKey = "BD1vyLsXvNLrCH7L4TDSZptJll9tvZwIk81RQZeSFCZOf_1yaDrNtXkVa21AWXrdF8mZHGriGaokM1GJRjErapE";
+const privateVapidKey = "URPBqUSlqj1Ttm7hYWb9wprRusnPPSCc_V-bFcCIJJ8";
+webpush.setVapidDetails("mailto:romane@echino.com", publicVapidKey, privateVapidKey);
+
 // This displays message that the server running and listening to specified port
 app.listen(port, () => console.log(`Listening on port ${port}`)); //Line 6
 console.log('Salut', uuidv4())
+
+app.post('/api/subscribe', (req, res) => {
+  const subscription = req.body;
+  res.status(201).json({});
+  const payload = JSON.stringify({ title: "Hello World", body: "This is your first push notification" });
+
+  webpush.sendNotification(subscription, payload).catch(console.log);
+})
 
 app.post('/api/disconnect', (req, res) => {
   console.log('/disconnect ---------------')
@@ -17,7 +30,7 @@ app.post('/api/disconnect', (req, res) => {
   console.log('clients before', JSON.stringify(connectedClients));
   let data = req.body;
   let response = 'ALREADY_DISCONNECT'
-  
+
   let clientIndex = connectedClients.findIndex((obj) => obj.id === data.id);
 
   if (clientIndex > -1) {
@@ -39,12 +52,12 @@ app.post('/api/connect', (req, res) => {
   console.log('data', JSON.stringify(req.body));
 
   let data = req.body;
- 
+
   let isHost = connectedClients.length === 0 ? true : false;
-console.log('isHost (emptyclients)', isHost);
-  if(!isHost){
+  console.log('isHost (emptyclients)', isHost);
+  if (!isHost) {
     console.log('clients now', JSON.stringify(connectedClients));
-    if(connectedClients.filter(c => c.connected === true).length === 0){
+    if (connectedClients.filter(c => c.connected === true).length === 0) {
       isHost = true;
       console.log('isHost (no one connected)', isHost);
     }
@@ -54,29 +67,29 @@ console.log('isHost (emptyclients)', isHost);
     nickname: data.nickname,
     id: data.id,
     host: isHost,
-    connected:true
+    connected: true
   }
 
   let foundClient = connectedClients.find(c => c.id === data.id)
-  if(foundClient){
-   
+  if (foundClient) {
+
     let clientIndex = connectedClients.findIndex((obj) => obj.id === data.id);
     foundClient.host = isHost;
     foundClient.connected = true;
     connectedClients[clientIndex] = foundClient;
 
-    console.log('found',clientIndex,connectedClients[clientIndex]);
+    console.log('found', clientIndex, connectedClients[clientIndex]);
     client = foundClient;
   }
-  else{
+  else {
     console.log('new client');
     connectedClients.push(client)
   }
-  
-  console.log('clients now', JSON.stringify(connectedClients,null,2));
+
+  console.log('clients now', JSON.stringify(connectedClients, null, 2));
 
   let response = 'HOST';
-  if(!isHost){
+  if (!isHost) {
     response = connectedClients.find(c => c.host === true).id;
   }
 
