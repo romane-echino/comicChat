@@ -56,7 +56,7 @@ class App extends React.Component<IAppProps, IAppState>{
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
 
         try {
             //@ts-ignore
