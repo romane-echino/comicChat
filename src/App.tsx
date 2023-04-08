@@ -66,6 +66,14 @@ class App extends React.Component<IAppProps, IAppState>{
 
         }
 
+        window.addEventListener('appinstalled', (evt) => {
+            alert('a2hs installed');
+        });
+
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            alert('display-mode is standalone');
+        }
+
 
         if ("virtualKeyboard" in navigator) {
             //@ts-ignore
