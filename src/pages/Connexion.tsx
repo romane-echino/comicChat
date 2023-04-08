@@ -46,7 +46,12 @@ export class Connexion extends React.Component<IConnexionProps, IConnexionState>
         } else if (userAgent.match(/firefox|fxios/i)) {
             browserName = "firefox";
         } else if (userAgent.match(/safari/i)) {
-            browserName = "safari";
+            if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i)) {
+                browserName = "ios";
+             }
+             else {
+                browserName = "macos";
+             }
         } else if (userAgent.match(/opr\//i)) {
             browserName = "opera";
         } else if (userAgent.match(/edg/i)) {
