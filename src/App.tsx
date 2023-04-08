@@ -58,8 +58,14 @@ class App extends React.Component<IAppProps, IAppState>{
 
     componentDidMount() {
 
-        //@ts-ignore
-        alert(navigator.getInstalledRelatedApps())
+        try {
+            //@ts-ignore
+            alert(await navigator.getInstalledRelatedApps())
+        }
+        catch (e) {
+
+        }
+
 
         if ("virtualKeyboard" in navigator) {
             //@ts-ignore
