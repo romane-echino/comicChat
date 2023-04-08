@@ -3,13 +3,24 @@ const app = express();
 const port = process.env.PORT || 5000;
 const webpush = require('web-push');
 const { v4: uuidv4 } = require('uuid');
-app.use(express.json())
-
-connectedClients = [];
 
 const publicVapidKey = "BD1vyLsXvNLrCH7L4TDSZptJll9tvZwIk81RQZeSFCZOf_1yaDrNtXkVa21AWXrdF8mZHGriGaokM1GJRjErapE";
 const privateVapidKey = "URPBqUSlqj1Ttm7hYWb9wprRusnPPSCc_V-bFcCIJJ8";
 webpush.setVapidDetails("mailto:romane@echino.com", publicVapidKey, privateVapidKey);
+
+app.use(express.json())
+
+
+app.use(function(req, res, next) {
+	res.setHeader('Access-Control-Allow-Origin', process.env['ACCESS_CONTROL']);
+	res.setHeader('Access-Control-Allow-Methods','GET, POST, OPTIONS, PUT, PATCH, DELETE');
+	res.setHeader('Access-Control-Allow-Headers', 'content-type');
+	next();
+});
+
+connectedClients = [];
+
+
 
 // This displays message that the server running and listening to specified port
 app.listen(port, () => console.log(`Listening on port ${port}`)); //Line 6

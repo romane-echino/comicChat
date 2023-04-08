@@ -57,10 +57,14 @@ class App extends React.Component<IAppProps, IAppState>{
     }
 
     componentDidMount() {
+
+        //@ts-ignore
+        alert(navigator.getInstalledRelatedApps())
+
         if ("virtualKeyboard" in navigator) {
             //@ts-ignore
             navigator.virtualKeyboard.overlaysContent = true;
-          }
+        }
 
         window.addEventListener("beforeunload", this.onUnload.bind(this))
         document.addEventListener("pause", () => { alert('salut') }, false);
@@ -117,7 +121,7 @@ class App extends React.Component<IAppProps, IAppState>{
                 userId: this.state.user.id
             });
         }
-        else{
+        else {
             let value = this.textInput.current!.value;
             this.addMessage({
                 timeStamp: new Date().toISOString(),
@@ -329,13 +333,13 @@ class App extends React.Component<IAppProps, IAppState>{
                                 </div>
                             </div>
                             <div className='fixed top-12 inset-x-0 bottom-24 border overflow-x-hidden overflow-y-auto 
-                            flex flex-wrap gap-2 flex-row justify-center p-4' style={{background:`url(${background})`}}>
+                            flex flex-wrap gap-2 flex-row justify-center p-4' style={{ background: `url(${background})` }}>
                                 {this.state.messages.map((value, index) => {
                                     return <ChatSVGBox key={index} Messages={[value]} />
                                 })}
                             </div>
                             <div className='flex bg-[#92C8F8] pb-8 gap-2 pt-2 px-2 fixed inset-x-0 bottom-0 h-24'
-                            style={{marginBottom:'calc(20px + env(keyboard-inset-height));'}}>
+                                style={{ marginBottom: 'calc(20px + env(keyboard-inset-height));' }}>
                                 <div className='relative grow'>
 
 
@@ -353,16 +357,16 @@ class App extends React.Component<IAppProps, IAppState>{
                                             </div>
                                         </Popover.Button>
                                         <Popover.Panel as="div" className='fixed bottom-24 right-0 p-4 shadow-md rounded-md'>
-   
-                                                <div className='flex gap-2'>
-                                                    <div>Happy</div>
-                                                    <div>
+
+                                            <div className='flex gap-2'>
+                                                <div>Happy</div>
+                                                <div>
                                                     <i className="fa-duotone fa-face-smile-beam"></i>
-                                                    </div>
                                                 </div>
-                                                <div>Sad</div>
-                                                <div>Angry</div>
-                                                <div>Hello</div>
+                                            </div>
+                                            <div>Sad</div>
+                                            <div>Angry</div>
+                                            <div>Hello</div>
 
                                         </Popover.Panel>
                                     </Popover>
