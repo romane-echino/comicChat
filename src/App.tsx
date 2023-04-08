@@ -29,6 +29,7 @@ interface IAppState {
     host: PeerData | null;
 
     message: string;
+
 }
 
 interface PeerData {
@@ -43,8 +44,12 @@ class App extends React.Component<IAppProps, IAppState>{
     textInput = createRef<HTMLInputElement>();
     peer: Peer | null = null;
 
+
+
     constructor(props) {
         super(props);
+
+        
 
         this.state = {
             user: null,
@@ -52,28 +57,12 @@ class App extends React.Component<IAppProps, IAppState>{
             messages: [],
             clients: {},
             host: null,
-            message: ''
+            message: '',
+            
         }
     }
 
     async componentDidMount() {
-
-        try {
-            //@ts-ignore
-            alert(await navigator.getInstalledRelatedApps())
-        }
-        catch (e) {
-
-        }
-
-        window.addEventListener('appinstalled', (evt) => {
-            alert('a2hs installed');
-        });
-
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            alert('display-mode is standalone');
-        }
-
 
         if ("virtualKeyboard" in navigator) {
             //@ts-ignore
