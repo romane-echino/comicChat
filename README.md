@@ -1,9 +1,14 @@
 # comicChat
 
+## New features
+- detect pwa installation (force install as pwa)
+- push notifications first implementation
+
 ## Pending features
 
-- detect pwa installation (force install as pwa)
-- push notifications (also on ios)
+
+- web push notifications on ios
+- match web push subscription with peer user id
 - list room/ make room (change the whole client/host system in a room based manner)
 - change tile design
 - make tile background test
@@ -22,3 +27,5 @@ VAPID
 "publicKey": "BD1vyLsXvNLrCH7L4TDSZptJll9tvZwIk81RQZeSFCZOf_1yaDrNtXkVa21AWXrdF8mZHGriGaokM1GJRjErapE",
 "privateKey": "URPBqUSlqj1Ttm7hYWb9wprRusnPPSCc_V-bFcCIJJ8"
 }
+
+https://washamdev.com/debug-a-website-in-ios-safari-on-windows/

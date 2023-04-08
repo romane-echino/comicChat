@@ -3,8 +3,8 @@
   "short_name": "ComicChat",
   "start_url": "./?utm_source=web_app_manifest",
   "display": "standalone",
-  "background_color": "#9AC8EB",
-  "theme_color": "#9AC8EB",
+  "background_color": "#9ac8eb",
+  "theme_color": "#9ac8eb",
   "icons": [
     {
       "src": "icons/icon.png",
