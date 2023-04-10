@@ -1,11 +1,11 @@
 # comicChat
 
 ## New features
+
 - detect pwa installation (force install as pwa)
 - push notifications first implementation
 
 ## Pending features
-
 
 - web push notifications on ios
 - match web push subscription with peer user id

@@ -304,7 +304,6 @@ class App extends React.Component<IAppProps, IAppState>{
         })
     }
 
-
     render(): React.ReactNode {
         return (
             <div>
@@ -336,7 +335,7 @@ class App extends React.Component<IAppProps, IAppState>{
                                 </div>
                             </div>
                             <div className='fixed top-12 inset-x-0 bottom-24 border overflow-x-hidden overflow-y-auto 
-                            flex flex-wrap gap-2 flex-row justify-center p-4' style={{ background: `url(${background})` }}>
+                            lg:flex lg:flex-wrap gap-2 flex-row justify-center p-4' style={{ background: `url(${background})` }}>
                                 {this.state.messages.map((value, index) => {
                                     return <ChatSVGBox key={index} Messages={[value]} />
                                 })}
