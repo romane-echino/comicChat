@@ -163,7 +163,7 @@ export class Register extends React.Component<IRegisterProps, IRegisterState> {
     
                         <button 
                             onClick={this.generateToken}
-                            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                            className="w-full bg-comic text-white py-2 px-4 rounded-lg hover:bg-comic focus:outline-none focus:ring-2 focus:ring-comic focus:ring-offset-2 transition-colors"
                         >
                             Valider mon numéro
                         </button>

@@ -4,7 +4,7 @@
   "description": "comic book style chat",
   "main": "index.js",
   "homepage": "./",
-  "proxy": "http://localhost:3000",
+  "proxy": "http://192.168.1.234:3030",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-scripts build",

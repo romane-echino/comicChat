@@ -15,7 +15,7 @@ const port = 3030;
 // Middleware
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://192.168.1.234:3000', 'http://localhost:3000'],
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
 }));
@@ -52,6 +52,10 @@ process.on('SIGINT', () => {
         }
         process.exit(0);
     });
+});
+
+app.get('/', (req, res) => {
+    return res.send('Hello, world!');
 });
 
 app.post('/api/register', async (req, res) => {
@@ -142,7 +146,7 @@ app.post('/api/verify-token', (req, res) => {
                 console.log('Failed to verify token: User not found');
                 return res.status(401).json({ error: 'Invalid token' });
             }
-            
+
             res.status(200).json({});
         });
     });

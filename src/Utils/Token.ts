@@ -1,3 +1,5 @@
+const serverUrl = 'http://192.168.1.234:3030';
+
 class ComicTon {
     private static instance: ComicTon;
     private phoneNumber: string | null = null;
@@ -58,7 +60,7 @@ export class ComicToken {
     static async register(phoneNumber: string) {
         try {
             console.log('generateToken::phoneNumber', phoneNumber);
-            const response = await fetch('http://localhost:3030/api/register', {
+            const response = await fetch(serverUrl+'/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,7 +83,7 @@ export class ComicToken {
         try {
             let jsonBody = JSON.stringify({ code:code, phoneNumber: ComicTon.getInstance().getPhoneNumber() });
             console.log('validateCode::jsonBody', jsonBody);
-            const response = await fetch('http://localhost:3030/api/verify-code', {
+            const response = await fetch(serverUrl+'/api/verify-code', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -112,7 +114,7 @@ export class ComicToken {
 
         console.log('validateToken::token', token);
         try {
-            const response = await fetch('http://localhost:3030/api/verify-token', {
+            const response = await fetch(serverUrl+'/api/verify-token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1236,6 +1236,11 @@ select {
   background-color: rgb(209 213 219 / var(--tw-bg-opacity));
 }
 
+.bg-comic {
+  --tw-bg-opacity: 1;
+  background-color: rgb(146 200 248 / var(--tw-bg-opacity));
+}
+
 .p-2 {
   padding: 0.5rem;
 }
@@ -1505,6 +1510,11 @@ select {
 .hover\:bg-indigo-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(67 56 202 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-comic:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(146 200 248 / var(--tw-bg-opacity));
 }
 
 .focus\:outline-none:focus {
