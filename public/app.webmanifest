@@ -1,15 +1,47 @@
 {
-  "name": "ComicChat",
-  "short_name": "ComicChat",
-  "start_url": "./?utm_source=web_app_manifest",
-  "display": "standalone",
-  "background_color": "#9ac8eb",
-  "theme_color": "#9ac8eb",
-  "icons": [
-    {
-      "src": "icons/icon.png",
-      "sizes": "1024x1024",
-      "type": "image/png"
-    }
-  ]
+    "name": "Comic Chat",
+    "short_name": "ComicChat",
+    "description": "A chat application with a comic twist.",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#000000",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "permissions": [
+        "notifications",
+        "push",
+        "geolocation"
+    ],
+    "categories": [
+        "social",
+        "communication"
+    ],
+    "lang": "en-US",
+    "dir": "ltr",
+    "screenshots": [
+        {
+            "src": "/screenshots/screenshot-narrow.png",
+            "sizes": "320x640",
+            "type": "image/png",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "/screenshots/screenshot-wide.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
+        }
+    ]
 }

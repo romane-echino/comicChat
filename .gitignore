@@ -3,3 +3,4 @@
 /build
 /api/package-lock.json
 /api/node_modules
+.env
