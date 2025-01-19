@@ -4,3 +4,5 @@
 /api/package-lock.json
 /api/node_modules
 .env
+
+/server/backend/database.sqlite

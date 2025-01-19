@@ -40,7 +40,7 @@ export class RoomFooter extends React.Component<IRoomFooterProps, IRoomFooterSta
 
     render() {
         return (
-            <div className='flex justify-between items-center p-2 gap-4'>
+            <div className='flex justify-between items-center px-2 pt-2 pb-10 gap-4 backdrop-blur-md bg-white/10 absolute bottom-0 inset-x-0'>
 
                 <div>
                     <div className='rounded-full w-6 h-6 bg-white'></div>

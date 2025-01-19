@@ -41,10 +41,10 @@ export class Room extends React.Component<IRoomProps, IRoomState> {
 
     render() {
         return (
-            <div className='grow bg-black/90 h-full flex flex-col'>
-                <RoomHeader />
+            <div className='h-screen relative grow'>
+                
 
-                <div className='bg-black grow p-4 flex flex-row gap-4 flex-wrap overflow-y-auto'>
+                <div className='bg-black px-4 pt-20 pb-24 flex flex-row gap-4 flex-wrap items-start justify-start overflow-y-auto absolute inset-0'>
 
                     <div className='border border-white w-80 h-80 p-4 text-center'>
                         <div>Group name</div>
@@ -86,6 +86,8 @@ export class Room extends React.Component<IRoomProps, IRoomState> {
                         <ChatBubble key={blockIndex} {...block} />
                     )}
                 </div>
+
+                <RoomHeader />
 
                 <RoomFooter NewMessage={(m) => this.handleNewMessage(m)} />
             </div>
