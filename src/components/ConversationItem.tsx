@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 
 
 interface IConversationItemProps {
+    Select:() => void;
 }
 
 interface IConversationItemState {
@@ -25,7 +26,7 @@ export class ConversationItem extends React.Component<IConversationItemProps, IC
 
     render() {
         return (
-            <div className='flex p-4 items-center gap-4 hover:bg-white/5 cursor-pointer'>
+            <div className='flex p-4 items-center gap-4 hover:bg-white/5 cursor-pointer' onClick={() => this.props.Select()}>
                 <div className='rounded-full w-12 h-12 bg-white'></div>
 
                 <div className='grow'>

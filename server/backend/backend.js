@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const twilio = require('twilio');
+const { v4: uuidv4 } = require('uuid');
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 const app = express();
@@ -15,7 +16,7 @@ const port = 3030;
 // Middleware
 app.use(bodyParser.json());
 app.use(cors({
-    origin: ['http://192.168.1.234:3000', 'http://localhost:3000'],
+    origin: ['https://192.168.1.207:3000', 'https://localhost:3000'],
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
 }));
@@ -84,6 +85,7 @@ app.post('/api/register', async (req, res) => {
 
 
 app.post('/api/verify-code', async (req, res) => {
+    console.log('Verifying phone code');
     const { phoneNumber, code } = req.body;
 
     if (!/^\d{6}$/.test(code)) {
@@ -124,6 +126,7 @@ app.post('/api/verify-code', async (req, res) => {
 
 
 app.post('/api/verify-token', (req, res) => {
+    console.log('Verifying token');
     let { token } = req.body;
 
     if (!token) {
@@ -152,7 +155,30 @@ app.post('/api/verify-token', (req, res) => {
     });
 });
 
+
+app.get('/api/generate-guid', (req, res) => {
+    const guid = uuidv4();
+    res.status(200).json({ guid });
+});
+
 // Start server
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on https://192.168.1.207:${port}`);
 });
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something broke!' });
+});
+
+
+module.exports = function override(config, env) {
+    // ...existing fallback configuration...
+
+    // Add HTTPS configuration
+    process.env.HTTPS = true;
+    process.env.SSL_CRT_FILE = path.resolve('./certificates/localhost+1.pem');
+    process.env.SSL_KEY_FILE = path.resolve('./certificates/localhost+1-key.pem');
+
+    return config;
+};

@@ -8,14 +8,17 @@ import { Register } from './components/Register';
 import { ComicToken } from './Utils/Token';
 import { Customize } from './components/Customize';
 import { ValidateCode } from './components/ValidateCode';
-
+import AppContent from './components/AppContent';
+import { Loading } from './components/Loading';
+import { isMobile } from 'react-device-detect';
+import { DesktopLogin } from './components/DesktopLogin';
 
 interface IAppProps {
 
 }
 
 interface IAppState {
-    step: 'loading' | 'register' | 'validateCode' | 'customize' | 'appContent';
+    step: 'loading' | 'register' | 'validateCode' | 'customize' | 'appContent' | 'desktopLogin';
 }
 
 
@@ -42,7 +45,13 @@ class App extends React.Component<IAppProps, IAppState> {
                 }
             }
             else {
-                this.setStep('register');
+                if (!isMobile) {
+                    this.setStep('desktopLogin');
+                }
+                else {
+                    this.setStep('register');
+                }
+
             }
         }
         catch (error) {
@@ -60,7 +69,9 @@ class App extends React.Component<IAppProps, IAppState> {
     }
 
     render() {
-       return (
+
+
+        return (
             <>
                 {this.getStep()}
 
@@ -75,24 +86,20 @@ class App extends React.Component<IAppProps, IAppState> {
 
     getStep(): ReactNode {
         let step = this.state.step;
+
         switch (step) {
             case 'register':
-                //this.setTheme('#92C8F8');
                 return <Register onRegister={() => this.setStep('validateCode')} />;
+            case 'desktopLogin':
+                return <DesktopLogin onLogin={() => this.setStep('appContent')} />;
             case 'validateCode':
                 return <ValidateCode onValidationComplete={() => this.setStep('customize')} />;
             case 'customize':
                 return <Customize onCustomizationComplete={() => this.setStep('appContent')} />;
             case 'appContent':
-                //this.setTheme('#191919');
-                return (
-                    <div className='flex inset-0 fixed text-white bg-black'>
-                        <Conversations />
-                        <Room />
-                    </div>
-                );
+                return <AppContent />
             default:
-                return null;
+                return <Loading />;
         }
     }
 }

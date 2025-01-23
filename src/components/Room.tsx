@@ -8,6 +8,7 @@ import { ChatBubble } from "./ChatBubble";
 
 
 interface IRoomProps {
+    Back: () => void;
 }
 
 interface IRoomState {
@@ -87,7 +88,7 @@ export class Room extends React.Component<IRoomProps, IRoomState> {
                     )}
                 </div>
 
-                <RoomHeader />
+                <RoomHeader Back={() => this.props.Back()} />
 
                 <RoomFooter NewMessage={(m) => this.handleNewMessage(m)} />
             </div>
