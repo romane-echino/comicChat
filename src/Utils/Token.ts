@@ -1,4 +1,4 @@
-const serverUrl = 'http://192.168.1.234:3030';
+const serverUrl = 'https://192.168.1.207:3031';
 
 class ComicTon {
     private static instance: ComicTon;
@@ -45,9 +45,35 @@ class ComicTon {
 
     public ToString(): string {
         return JSON.stringify(this);
-    }   
+    }
 }
 
+
+export const getMachineId = (): string => {
+    // Try to get existing ID from localStorage
+    let machineId = localStorage.getItem('machine_id');
+    
+    if (!machineId) {
+        // Generate new ID using timestamp + random number + navigator info
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(2);
+        const browserInfo = [
+            navigator.userAgent,
+            navigator.language,
+            screen.width,
+            screen.height,
+            window.devicePixelRatio
+        ].join('|');
+        
+        // Create hash from combined info
+        machineId = btoa(`${timestamp}-${random}-${browserInfo}`);
+        
+        // Store for future use
+        localStorage.setItem('machine_id', machineId);
+    }
+    
+    return machineId;
+};
 
 export class ComicToken {
 
@@ -58,32 +84,50 @@ export class ComicToken {
     private _token: string;
 
     static async register(phoneNumber: string) {
+        let response: any = {};
         try {
-            console.log('generateToken::phoneNumber', phoneNumber);
-            const response = await fetch(serverUrl+'/api/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ phoneNumber })
-            });
+            console.log('Attempting to register:', phoneNumber);
+            console.log('Server URL:', serverUrl + '/api/register');
+            let body = JSON.stringify({ phoneNumber });
+            console.log('Body:', body);
+            try {
+                response = await fetch(`${serverUrl}/api/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phoneNumber }),
+                    // For development, accept self-signed certificates
+                    mode: 'cors',
+                    credentials: 'same-origin'
+                });
+            }
+            catch (error) {
+                console.log('::Request error', error);
+                throw new Error(`Failed to register: ${error.message}`);
+            }
 
-            if(!response.ok){
-                throw new Error('Failed to register');
+            console.log('Request ok', response.ok);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.log('Request error', errorText);
+                throw new Error(`Server responded with ${response.status}: ${errorText}`);
             }
 
             ComicTon.getInstance().setPhoneNumber(phoneNumber);
             return true;
         } catch (error) {
-            throw new Error('Failed to register');
+            console.error('Registration error details:', error);
+            throw new Error(`Failed to register: ${error.message} ${response.statusText}`);
         }
     }
 
-    static async validateCode(code: string):Promise<boolean> {
+    static async validateCode(code: string): Promise<boolean> {
         try {
-            let jsonBody = JSON.stringify({ code:code, phoneNumber: ComicTon.getInstance().getPhoneNumber() });
+            let jsonBody = JSON.stringify({ code: code, phoneNumber: ComicTon.getInstance().getPhoneNumber() });
             console.log('validateCode::jsonBody', jsonBody);
-            const response = await fetch(serverUrl+'/api/verify-code', {
+            const response = await fetch(serverUrl + '/api/verify-code', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,16 +154,16 @@ export class ComicToken {
 
     }
 
-    static async validateToken(token: string):Promise<boolean> {
+    static async validateToken(token: string): Promise<boolean> {
 
         console.log('validateToken::token', token);
         try {
-            const response = await fetch(serverUrl+'/api/verify-token', {
+            const response = await fetch(serverUrl + '/api/verify-token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ token:token })
+                body: JSON.stringify({ token: token })
             });
 
             if (!response.ok) {

@@ -53,7 +53,7 @@ export class Register extends React.Component<IRegisterProps, IRegisterState> {
             console.error('Failed to detect country:', error);
             // Fallback to default country (e.g., France)
             const defaultCountry = countries.find(
-                country => country.code === 'FR'
+                country => country.code === 'CH'
             );
             if (defaultCountry) {
                 this.setCountry(defaultCountry);
@@ -78,6 +78,7 @@ export class Register extends React.Component<IRegisterProps, IRegisterState> {
                 );
                 this.props.onRegister();
             } catch (error) {
+                console.log('\n::Failed to generate token:', error, error.message, error.stacktrace);
                 this.setState({
                     error: error instanceof Error ? error.message : 'Failed to generate token'
                 });

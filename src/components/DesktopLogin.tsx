@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { getMachineId } from '../Utils/Token';
 
 interface DesktopLoginProps {
     onLogin: () => void;
@@ -8,7 +9,20 @@ interface DesktopLoginProps {
 
 
 export const DesktopLogin: React.FC<DesktopLoginProps> = ({ onLogin }) => {
-    const connectionData = "your-connection-data-here";
+    const [connectionData, setConnectionData] = useState(getMachineId());
+
+    useEffect(() => {
+        // Update connection data every 10 seconds
+        const timer = setInterval(() => {
+            let id = getMachineId()
+            console.log(id)
+            setConnectionData(id);
+        }, 10000);
+
+        // Cleanup timer on component unmount
+        //@ts-ignore
+        return () => clearInterval(timer);
+    }, []);
 
     return (
         <div className="inset-0 fixed flex items-center justify-center bg-gray-100">

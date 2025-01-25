@@ -51,7 +51,6 @@ class App extends React.Component<IAppProps, IAppState> {
                 else {
                     this.setStep('register');
                 }
-
             }
         }
         catch (error) {
@@ -80,6 +79,11 @@ class App extends React.Component<IAppProps, IAppState> {
 
                     </div>
                 }
+
+
+                <div id='log' className='fixed text-xs p-2 inset-x-2 bottom-2 bg-black text-white font-mono h-20 overflow-y-auto rounded-md'>
+
+                </div>
             </>
         )
     }

@@ -31,7 +31,7 @@ export class Conversations extends React.Component<IConversationsProps, IConvers
             <>
                 <div className='p-4 flex flex-col gap-2'>
                     <div className='flex justify-between items-center text-2xl'>
-                        <div className='font-bold'>Chats</div>
+                        <div className='font-bold grow'>Chats</div>
 
                         <div className="cursor-pointer" onClick={() => this.props.AddDevice()}>
                         <i className="fa-duotone fa-solid fa-desktop"></i>

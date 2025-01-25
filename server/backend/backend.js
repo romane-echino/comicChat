@@ -1,17 +1,22 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
 require('dotenv').config();
 
-const twilio = require('twilio');
-const { v4: uuidv4 } = require('uuid');
-const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const database = require('./db/database');
+const auth = require('./routes/auth');
 
 const app = express();
 const port = 3030;
+const httpsPort = 3031;
+
+// SSL certificates
+const privateKey = fs.readFileSync('./certificates/localhost+3-key.pem', 'utf8');
+const certificate = fs.readFileSync('./certificates/localhost+3.pem', 'utf8');
+const credentials = { key: privateKey, cert: certificate };
 
 // Middleware
 app.use(bodyParser.json());
@@ -21,164 +26,32 @@ app.use(cors({
     allowedHeaders: ['Content-Type']
 }));
 
-// Initialize SQLite database with file
-const dbPath = path.resolve(__dirname, process.env.DB_PATH);
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Error opening database:', err);
-        return;
-    }
-    console.log('Connected to database.');
+// Initialize database
+database.connect();
+
+// Routes
+app.use('/api/', auth);
+
+// Create servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+
+// Start servers
+httpServer.listen(port, '0.0.0.0', () => {
+    console.log(`HTTP Server running on http://0.0.0.0:${port}`);
 });
 
-// Create tables if they don't exist
-db.serialize(() => {
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, 
-        phone_number TEXT UNIQUE,
-        verification_code TEXT,
-        token TEXT,
-        verified BOOLEAN DEFAULT 0,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`);
+httpsServer.listen(httpsPort, '0.0.0.0', () => {
+    console.log(`HTTPS Server running on https://0.0.0.0:${httpsPort}`);
 });
 
-// Add error handling for database close
-process.on('SIGINT', () => {
-    db.close((err) => {
-        if (err) {
-            console.error('Error closing database:', err);
-        } else {
-            console.log('Database connection closed.');
-        }
-        process.exit(0);
-    });
-});
-
-app.get('/', (req, res) => {
-    return res.send('Hello, world!');
-});
-
-app.post('/api/register', async (req, res) => {
-    const { phoneNumber } = req.body;
-    if (!phoneNumber) {
-        return res.status(400).json({ error: 'Phone number is required' });
-    }
-
-    try {
-        let verifiation = await twilioClient.verify.v2
-            .services(process.env.TWILIO_VERIFY_SERVICE_SID)
-            .verifications
-            .create({ to: phoneNumber, channel: 'sms' });
-
-        if (verifiation.status === 'pending') {
-            res.status(200).json({});
-        }
-        else {
-            res.status(500).json({ error: 'Failed to register' });
-        }
-    } catch (error) {
-        console.log('Failed to generate token:', error);
-        res.status(500).json({ error: 'Failed to generate token' });
-    }
-});
-
-
-app.post('/api/verify-code', async (req, res) => {
-    console.log('Verifying phone code');
-    const { phoneNumber, code } = req.body;
-
-    if (!/^\d{6}$/.test(code)) {
-        return res.status(400).json({ error: 'Invalid verification code format' });
-    }
-
-    if (!/^\+\d{1,50}$/.test(phoneNumber)) {
-        return res.status(400).json({ error: 'Invalid phone number format' });
-    }
-
-    const verificationCheck = await twilioClient.verify.v2
-        .services(process.env.TWILIO_VERIFY_SERVICE_SID)
-        .verificationChecks.create({
-            code: code,
-            to: phoneNumber,
-        });
-
-
-    try {
-        if (verificationCheck.status !== 'approved') {
-            return res.status(400).json({ error: 'Invalid verification code' });
-        }
-        else {
-            const token = jwt.sign({ phoneNumber }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
-            db.run(
-                'INSERT INTO users (phone_number, verification_code, token) VALUES (?, ?, ?)',
-                [phoneNumber, code, token]
-            );
-
-            return res.status(200).json({ token });
-        }
-    }
-    catch (error) {
-        console.log('Failed to verify code:', error);
-        res.status(500).json({ error: 'Failed to verify code' });
-    }
-});
-
-
-app.post('/api/verify-token', (req, res) => {
-    console.log('Verifying token');
-    let { token } = req.body;
-
-    if (!token) {
-        return res.status(400).json({ error: 'Token is required' });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
-        if (err) {
-            console.log('Failed to verify token: JWT error:', err);
-            return res.status(401).json({ error: 'Invalid token' });
-        }
-
-        db.get('SELECT * FROM users WHERE phone_number = ?', [decoded.phoneNumber], (err, row) => {
-            if (err) {
-                console.log('Failed to verify token:', err);
-                return res.status(500).json({ error: 'Failed to verify token' });
-            }
-
-            if (!row) {
-                console.log('Failed to verify token: User not found');
-                return res.status(401).json({ error: 'Invalid token' });
-            }
-
-            res.status(200).json({});
-        });
-    });
-});
-
-
-app.get('/api/generate-guid', (req, res) => {
-    const guid = uuidv4();
-    res.status(200).json({ guid });
-});
-
-// Start server
-app.listen(port, () => {
-    console.log(`Server is running on https://192.168.1.207:${port}`);
-});
-
+// Error handling
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'Something broke!' });
 });
 
 
-module.exports = function override(config, env) {
-    // ...existing fallback configuration...
-
-    // Add HTTPS configuration
-    process.env.HTTPS = true;
-    process.env.SSL_CRT_FILE = path.resolve('./certificates/localhost+1.pem');
-    process.env.SSL_KEY_FILE = path.resolve('./certificates/localhost+1-key.pem');
-
-    return config;
-};
+app.get('/hello', (req, res) => {    
+    res.send('Hello World!');
+});

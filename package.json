@@ -6,7 +6,7 @@
   "homepage": "./",
   "proxy": "http://192.168.1.207:3030",
   "scripts": {
-    "start": "set HTTPS=true&&set SSL_CRT_FILE=./certificates/localhost+1.pem&&set SSL_KEY_FILE=./certificates/localhost+1-key.pem&&react-app-rewired start",
+    "start": "set HTTPS=true&&set SSL_CRT_FILE=./certificates/localhost+3.pem&&set SSL_KEY_FILE=./certificates/localhost+3-key.pem&&react-app-rewired start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -34,6 +34,7 @@
     "express": "^4.21.2",
     "framer-motion": "^6.5.1",
     "html5-qrcode": "^2.3.8",
+    "https": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
