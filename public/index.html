@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, user-scalable=no" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color"  media="(prefers-color-scheme: dark)" />
   <meta name="description" content="Comic Chat" />
   <link rel="apple-touch-icon" href="logo192.png" />
@@ -47,7 +48,7 @@
     const subscription = await register.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: publicVapidKey,
-    });633
+    });
   }
 </script>
 

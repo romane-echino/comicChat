@@ -6,8 +6,11 @@ const http = require('http');
 const https = require('https');
 require('dotenv').config();
 
+// Custom modules
 const database = require('./db/database');
 const auth = require('./routes/auth');
+const peer = require('./routes/peer');
+const PeerService = require('./services/PeerService');
 
 const app = express();
 const port = 3030;
@@ -18,6 +21,14 @@ const privateKey = fs.readFileSync('./certificates/localhost+3-key.pem', 'utf8')
 const certificate = fs.readFileSync('./certificates/localhost+3.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
+//servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+const peerServer = new PeerService(httpsServer, {
+    key: privateKey,
+    cert: certificate
+});
+
 // Middleware
 app.use(bodyParser.json());
 app.use(cors({
@@ -26,15 +37,14 @@ app.use(cors({
     allowedHeaders: ['Content-Type']
 }));
 
+
 // Initialize database
 database.connect();
 
 // Routes
-app.use('/api/', auth);
-
-// Create servers
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
+app.use('/api/auth', auth);
+app.use('/api/peer', peer);
+app.use('/peer', peerServer.getServer());
 
 // Start servers
 httpServer.listen(port, '0.0.0.0', () => {
@@ -45,6 +55,7 @@ httpsServer.listen(httpsPort, '0.0.0.0', () => {
     console.log(`HTTPS Server running on https://0.0.0.0:${httpsPort}`);
 });
 
+
 // Error handling
 app.use((err, req, res, next) => {
     console.error(err.stack);
@@ -52,6 +63,6 @@ app.use((err, req, res, next) => {
 });
 
 
-app.get('/hello', (req, res) => {    
+app.get('/hello', (req, res) => {
     res.send('Hello World!');
 });

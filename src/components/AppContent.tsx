@@ -14,7 +14,7 @@ interface IAppContentState {
 
 export class AppContent extends React.Component<IAppContentProps, IAppContentState> {
 
-    constructor(props) {
+    constructor(props:IAppContentProps) {
         super(props);
 
         this.state = {

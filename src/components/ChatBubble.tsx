@@ -6,7 +6,7 @@ interface IChatBubbleState {
 
 export class ChatBubble extends React.Component<IChatBubbleBlock, IChatBubbleState> {
 
-    constructor(props) {
+    constructor(props:IChatBubbleBlock) {
         super(props);
 
         this.state = {

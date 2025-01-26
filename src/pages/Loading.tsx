@@ -1,6 +1,4 @@
-import axios from "axios";
 import React from "react";
-import { v4 as uuidv4 } from 'uuid';
 
 interface ILoadingProps {
 
@@ -12,7 +10,7 @@ interface ILoadingState {
 
 export class Loading extends React.Component<ILoadingProps, ILoadingState>{
   
-    constructor(props) {
+    constructor(props:ILoadingProps) {
         super(props);
 
             this.state = {

@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
 
 router.post('/verify-code', async (req, res) => {
     console.log('Verifying phone code');
-    const { phoneNumber, code } = req.body;
+    const { phoneNumber, code, uniqueId, agent } = req.body;
 
     if (!/^\d{6}$/.test(code)) {
         return res.status(400).json({ error: 'Invalid verification code format' });
@@ -59,8 +59,8 @@ router.post('/verify-code', async (req, res) => {
         else {
             const token = jwt.sign({ phoneNumber }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
             database.getInstance().run(
-                'INSERT INTO users (phone_number, verification_code, token) VALUES (?, ?, ?)',
-                [phoneNumber, code, token]
+                'INSERT INTO users (phone_number, verification_code, token, unique_id, agent) VALUES (?, ?, ?, ?, ?)',
+                [phoneNumber, code, token, uniqueId, agent]
             );
 
             return res.status(200).json({ token });

@@ -1,7 +1,4 @@
 import React, { createRef } from "react";
-import { ReactNode } from "react";
-import jwt from 'jsonwebtoken';
-
 import countries from '../assets/CountryCodes.json'
 import { Listbox } from "@headlessui/react";
 import { ComicToken } from "../Utils/Token";
@@ -26,7 +23,7 @@ interface Country {
 export class Register extends React.Component<IRegisterProps, IRegisterState> {
     codeInput = createRef<HTMLInputElement>();
 
-    constructor(props) {
+    constructor(props:IRegisterProps) {
         super(props);
 
         this.state = {
@@ -77,7 +74,7 @@ export class Register extends React.Component<IRegisterProps, IRegisterState> {
                     `${this.state.selectedCountry.dial_code}${this.state.phoneNumber.replace(/\D/g, '').replace(/^0/, '')}`
                 );
                 this.props.onRegister();
-            } catch (error) {
+            } catch (error:any) {
                 console.log('\n::Failed to generate token:', error, error.message, error.stacktrace);
                 this.setState({
                     error: error instanceof Error ? error.message : 'Failed to generate token'

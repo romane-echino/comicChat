@@ -1,15 +1,11 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client'
-import { MemoryRouter } from "react-router-dom";
 import NuApp from './NuApp';
 
 const root = createRoot(document.getElementById('root')!);
 
 root.render(
-    <MemoryRouter>
-      {/*<App /> */}
       <NuApp />
-    </MemoryRouter>
 );
 
 
@@ -28,6 +24,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+window.Buffer = window.Buffer || require("buffer").Buffer; 
 
 console.log = function() {
   var logDiv = document.getElementById("log");

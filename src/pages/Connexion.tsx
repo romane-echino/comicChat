@@ -30,7 +30,7 @@ export interface ServerUserInfo {
 export class Connexion extends React.Component<IConnexionProps, IConnexionState>{
     nicknameInput = React.createRef<HTMLInputElement>();
 
-    constructor(props) {
+    constructor(props:IConnexionProps) {
         super(props);
 
         let installed = false;
@@ -75,7 +75,7 @@ export class Connexion extends React.Component<IConnexionProps, IConnexionState>
                 },
                 loading: false,
                 installed: installed,
-                browser: browserName
+                browser: browserName as 'chrome' | 'ios'
             }
         }
         else {
@@ -86,7 +86,7 @@ export class Connexion extends React.Component<IConnexionProps, IConnexionState>
                 },
                 loading: false,
                 installed: installed,
-                browser: browserName
+                browser: browserName as 'chrome' | 'ios'
             }
             localStorage.setItem('userInfo', JSON.stringify(this.state.user));
         }

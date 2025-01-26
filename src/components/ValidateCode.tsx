@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ComicToken } from '../Utils/Token';
+import { PeerTon } from '../Utils/Peer';
 
 interface ValidateCodeProps {
     onValidationComplete: () => void;
@@ -42,6 +43,7 @@ export const ValidateCode: React.FC<ValidateCodeProps> = ({ onValidationComplete
                 setError('');
                 await ComicToken.validateCode(code);
                 onValidationComplete();
+                PeerTon.getInstance().Init();
             } catch (error) {
                 setError(error instanceof Error ? error.message : 'Failed to validate code');
             } finally {

@@ -13,7 +13,7 @@ interface IConversationsState {
 
 
 export class Conversations extends React.Component<IConversationsProps, IConversationsState> {
-    constructor(props) {
+    constructor(props:IConversationsProps) {
         super(props);
 
         this.state = {

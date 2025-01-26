@@ -20,10 +20,12 @@ class Database {
         this.db.serialize(() => {
             this.db.run(`CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                agent TEXT,
                 phone_number TEXT UNIQUE,
                 verification_code TEXT,
-                token TEXT,
-                verified BOOLEAN DEFAULT 0,
+                token TEXT UNIQUE,
+                peer_id TEXT,
+                unique_id TEXT UNIQUE,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )`);
         });

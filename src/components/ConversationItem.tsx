@@ -11,7 +11,7 @@ interface IConversationItemState {
 
 
 export class ConversationItem extends React.Component<IConversationItemProps, IConversationItemState> {
-    constructor(props) {
+    constructor(props:IConversationItemProps) {
         super(props);
 
         this.state = {

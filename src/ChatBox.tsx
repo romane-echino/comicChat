@@ -30,7 +30,7 @@ export class ChatBox extends React.Component<IChatBoxProps, IChatBoxState>{
     canvas = createRef<HTMLCanvasElement>();
 
 
-    constructor(props) {
+    constructor(props:IChatBoxProps) {
         super(props);
 
         this.state = {

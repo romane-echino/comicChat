@@ -17,7 +17,7 @@ interface IRoomState {
 
 
 export class Room extends React.Component<IRoomProps, IRoomState> {
-    constructor(props) {
+    constructor(props:IRoomProps) {
         super(props);
 
         this.state = {

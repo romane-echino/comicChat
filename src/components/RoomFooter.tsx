@@ -13,7 +13,7 @@ interface IRoomFooterState {
 export class RoomFooter extends React.Component<IRoomFooterProps, IRoomFooterState> {
     textInput = createRef<HTMLInputElement>();
 
-    constructor(props) {
+    constructor(props:IRoomFooterProps) {
         super(props);
 
         this.state = {

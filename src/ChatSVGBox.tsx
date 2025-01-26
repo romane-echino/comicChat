@@ -24,7 +24,7 @@ export interface ChatMessage {
 export class ChatSVGBox extends React.Component<IChatBoxProps, IChatBoxState>{
     canvas = createRef<SVGSVGElement>();
 
-    constructor(props) {
+    constructor(props:IChatBoxProps) {
         super(props);
 
         this.state = {

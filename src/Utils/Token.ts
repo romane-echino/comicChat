@@ -1,12 +1,28 @@
-const serverUrl = 'https://192.168.1.207:3031';
+import { machine } from "os";
 
-class ComicTon {
+export const serverUrl = 'https://192.168.1.207:3031';
+
+export class ComicTon {
     private static instance: ComicTon;
     private phoneNumber: string | null = null;
     private code: string | null = null;
     private token: string | null = null;
+    private uniqueId: string;
 
-    private constructor() { }
+    private constructor() {
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(2);
+        const browserInfo = [
+            navigator.userAgent,
+            navigator.language,
+            screen.width,
+            screen.height,
+            window.devicePixelRatio
+        ].join('|');
+
+        // Create hash from combined info
+        this.uniqueId = Buffer.from(`${timestamp}-${random}-${browserInfo}`).toString('base64')
+    }
 
     public static getInstance(): ComicTon {
         if (!ComicTon.instance) {
@@ -39,6 +55,10 @@ class ComicTon {
         return this.token;
     }
 
+    public getUniqueId(): string {
+        return this.uniqueId;
+    }
+
     public save(): void {
         localStorage.setItem('comic_token', JSON.stringify(this.token));
     }
@@ -47,33 +67,6 @@ class ComicTon {
         return JSON.stringify(this);
     }
 }
-
-
-export const getMachineId = (): string => {
-    // Try to get existing ID from localStorage
-    let machineId = localStorage.getItem('machine_id');
-    
-    if (!machineId) {
-        // Generate new ID using timestamp + random number + navigator info
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substring(2);
-        const browserInfo = [
-            navigator.userAgent,
-            navigator.language,
-            screen.width,
-            screen.height,
-            window.devicePixelRatio
-        ].join('|');
-        
-        // Create hash from combined info
-        machineId = btoa(`${timestamp}-${random}-${browserInfo}`);
-        
-        // Store for future use
-        localStorage.setItem('machine_id', machineId);
-    }
-    
-    return machineId;
-};
 
 export class ComicToken {
 
@@ -87,11 +80,11 @@ export class ComicToken {
         let response: any = {};
         try {
             console.log('Attempting to register:', phoneNumber);
-            console.log('Server URL:', serverUrl + '/api/register');
+            console.log('Server URL:', serverUrl + '/api/auth/register');
             let body = JSON.stringify({ phoneNumber });
             console.log('Body:', body);
             try {
-                response = await fetch(`${serverUrl}/api/register`, {
+                response = await fetch(`${serverUrl}/api/auth/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -102,7 +95,7 @@ export class ComicToken {
                     credentials: 'same-origin'
                 });
             }
-            catch (error) {
+            catch (error:any) {
                 console.log('::Request error', error);
                 throw new Error(`Failed to register: ${error.message}`);
             }
@@ -117,7 +110,7 @@ export class ComicToken {
 
             ComicTon.getInstance().setPhoneNumber(phoneNumber);
             return true;
-        } catch (error) {
+        } catch (error:any) {
             console.error('Registration error details:', error);
             throw new Error(`Failed to register: ${error.message} ${response.statusText}`);
         }
@@ -125,9 +118,14 @@ export class ComicToken {
 
     static async validateCode(code: string): Promise<boolean> {
         try {
-            let jsonBody = JSON.stringify({ code: code, phoneNumber: ComicTon.getInstance().getPhoneNumber() });
+            let jsonBody = JSON.stringify({
+                code: code,
+                phoneNumber: ComicTon.getInstance().getPhoneNumber(),
+                uniqueId: ComicTon.getInstance().getUniqueId(),
+                agent: navigator.userAgent
+            });
             console.log('validateCode::jsonBody', jsonBody);
-            const response = await fetch(serverUrl + '/api/verify-code', {
+            const response = await fetch(serverUrl + '/api/auth/verify-code', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -158,7 +156,7 @@ export class ComicToken {
 
         console.log('validateToken::token', token);
         try {
-            const response = await fetch(serverUrl + '/api/verify-token', {
+            const response = await fetch(serverUrl + '/api/auth/verify-token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

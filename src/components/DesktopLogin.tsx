@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { getMachineId } from '../Utils/Token';
+import { ComicToken, ComicTon } from '../Utils/Token';
+import { PeerAPI, PeerTon } from '../Utils/Peer';
 
 interface DesktopLoginProps {
     onLogin: () => void;
@@ -9,19 +10,19 @@ interface DesktopLoginProps {
 
 
 export const DesktopLogin: React.FC<DesktopLoginProps> = ({ onLogin }) => {
-    const [connectionData, setConnectionData] = useState(getMachineId());
+    const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        // Update connection data every 10 seconds
-        const timer = setInterval(() => {
-            let id = getMachineId()
-            console.log(id)
-            setConnectionData(id);
-        }, 10000);
-
-        // Cleanup timer on component unmount
-        //@ts-ignore
-        return () => clearInterval(timer);
+        try {
+            const uniqueId = ComicTon.getInstance().getUniqueId();
+            PeerAPI.registerDesktop(uniqueId).then(() => {
+                setIsConnected(true);
+                PeerTon.getInstance().Init();
+            });
+        }
+        catch (error) {
+            console.log('Failed to register desktop:', error);
+        }
     }, []);
 
     return (
@@ -35,11 +36,11 @@ export const DesktopLogin: React.FC<DesktopLoginProps> = ({ onLogin }) => {
                 {/* QR Code Container */}
                 <div className="flex justify-center mb-6">
                     <div className="w-64 h-64 border-2 border-gray-200 rounded-lg flex items-center justify-center">
-                        <QRCodeSVG
-                            value={connectionData}
-                            size={224}
-                            level="H"
-                        />
+                        {isConnected &&
+                            <QRCodeSVG
+                                value={ComicTon.getInstance().getUniqueId()}
+                                size={256} />
+                        }
                     </div>
                 </div>
 

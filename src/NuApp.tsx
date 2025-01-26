@@ -1,6 +1,6 @@
 import React, { createRef, ReactNode, useRef } from 'react';
 import './tailwind.scss'
-import { Route, Switch, withRouter } from 'react-router';
+
 import { ChatBox, ChatEmotion } from './ChatBox';
 import { Conversations } from './components/Conversations';
 import { Room } from './components/Room';
@@ -22,9 +22,9 @@ interface IAppState {
 }
 
 
-class App extends React.Component<IAppProps, IAppState> {
+export default class App extends React.Component<IAppProps, IAppState> {
 
-    constructor(props) {
+    constructor(props:IAppProps) {
         super(props);
 
         this.state = {
@@ -107,5 +107,3 @@ class App extends React.Component<IAppProps, IAppState> {
         }
     }
 }
-
-export default withRouter(App)

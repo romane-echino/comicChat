@@ -3,17 +3,16 @@ import { DataConnection, Peer } from "peerjs";
 import './tailwind.scss'
 import { ChatBox, ChatEmotion, ChatMessage } from './ChatBox';
 import { ChatSVGBox } from './ChatSVGBox';
-import { Route, Switch, RouteComponentProps, withRouter } from 'react-router';
-import { NavLink } from 'react-router-dom';
+
 import { Connexion, ServerUserInfo, UserInfo } from './pages/Connexion';
 import axios from 'axios';
 import { Loading } from './pages/Loading';
 import { motion } from 'framer-motion';
 import { Popover } from '@headlessui/react';
 import { url } from 'inspector';
-import background from './background.jpg';
 
-interface IAppProps extends RouteComponentProps {
+
+interface IAppProps {
 
 }
 
@@ -39,14 +38,14 @@ interface PeerData {
     ctx: DataConnection | null;
 }
 
-class App extends React.Component<IAppProps, IAppState>{
+export default class App extends React.Component<IAppProps, IAppState>{
     targetId = createRef<HTMLInputElement>();
     textInput = createRef<HTMLInputElement>();
     peer: Peer | null = null;
 
 
 
-    constructor(props) {
+    constructor(props:IAppProps) {
         super(props);
 
         
@@ -91,7 +90,7 @@ class App extends React.Component<IAppProps, IAppState>{
         window.removeEventListener("beforeunload", this.onUnload.bind(this))
     }
 
-    onUnload(event) {
+    onUnload(event:any) {
         const e = event || window.event;
         e.preventDefault();
 
@@ -183,7 +182,7 @@ class App extends React.Component<IAppProps, IAppState>{
                     console.log('client connection is open #2', clients);
                     this.setState({ clients: clients })
 
-                    this.props.history.push('/Chat')
+                    //this.props.history.push('/Chat')
                 }
             });
 
@@ -236,7 +235,7 @@ class App extends React.Component<IAppProps, IAppState>{
                     }
 
                     conn.send(firstMessage);
-                    this.props.history.push('/Chat')
+                    //this.props.history.push('/Chat')
                     //conn.send("hello!");
                 });
             });
@@ -295,17 +294,19 @@ class App extends React.Component<IAppProps, IAppState>{
         }, () => {
             if (hostId !== 'HOST' && this.peer) {
                 this.peerConnexion(hostId, false);
-                this.props.history.push('/loading')
+                //this.props.history.push('/loading')
             }
             else {
                 setInterval(this.updateClients.bind(this), 5000);
-                this.props.history.push('/loading')
+                //this.props.history.push('/loading')
             }
         })
     }
 
     render(): React.ReactNode {
-        return (
+
+        return null;
+        /*return (
             <div>
                 <Switch>
                     <Route path='/' exact>
@@ -389,7 +390,7 @@ class App extends React.Component<IAppProps, IAppState>{
                     </Route>
                 </Switch>
             </div>
-        )
+        )*/
     }
     /*
         render(): React.ReactNode {
@@ -436,5 +437,3 @@ class App extends React.Component<IAppProps, IAppState>{
     
         */
 }
-
-export default withRouter(App)

@@ -11,7 +11,7 @@ interface IRoomHeaderState {
 
 
 export class RoomHeader extends React.Component<IRoomHeaderProps, IRoomHeaderState> {
-    constructor(props) {
+    constructor(props:IRoomHeaderProps) {
         super(props);
 
         this.state = {

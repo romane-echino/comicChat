@@ -38,6 +38,7 @@
     "jsonwebtoken": "^9.0.2",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "peer": "^1.0.2",
     "peerjs": "^1.4.7",
     "process": "^0.11.10",
     "qrcode.react": "^4.2.0",
